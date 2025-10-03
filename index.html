@@ -173,6 +173,16 @@
                     <span id="ratio"></span>
                 </div>
             </div>
+
+            <div class="result-item" style="background-color: #e7f3ff; border: 2px solid #2196F3;">
+                <span class="result-label">Dilution Ratio:</span>
+                <div style="color: #1976D2; font-weight: bold; font-size: 16px;">
+                    <span id="dilutionRatio"></span>
+                </div>
+                <small style="color: #666; display: block; margin-top: 5px;">
+                    This is the ratio you're mixing for <span id="finalStrength"></span>% from <span id="concentrateStrength"></span>% concentrate
+                </small>
+            </div>
         </div>
 
         <div class="warning">
@@ -237,6 +247,15 @@
             // Update ratio (stays the same regardless of units)
             const ratio = calculatedWaterLitres / calculatedHypoLitres;
             document.getElementById('ratio').textContent = `1:${ratio.toFixed(1)} (Sodium Hypochlorite:Water)`;
+            
+            // Calculate and display dilution ratio (hypo:water)
+            const dilutionRatio = calculatedWaterLitres / calculatedHypoLitres;
+            document.getElementById('dilutionRatio').textContent = `1:${dilutionRatio.toFixed(1)}`;
+            
+            // Display the final strength info
+            const desiredStrength = (calculatedHypoLitres * calculatedConcentrate) / calculatedTankSize;
+            document.getElementById('finalStrength').textContent = desiredStrength.toFixed(1);
+            document.getElementById('concentrateStrength').textContent = calculatedConcentrate.toFixed(1);
         }
 
         function calculate() {
