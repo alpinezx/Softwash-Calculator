@@ -216,36 +216,31 @@
                 const surfactantMl = calculatedSurfactantLitres * 1000;
                 const totalMl = calculatedTankSize * 1000;
 
-                document.getElementById('hypoLitres').textContent = hypoMl.toFixed(0);
-                document.getElementById('hypoMl').textContent = '';
-                document.getElementById('waterLitres').textContent = waterMl.toFixed(0);
-                document.getElementById('waterMl').textContent = '';
-                document.getElementById('surfactantMl').textContent = surfactantMl.toFixed(0);
-                document.getElementById('surfactantLitres').textContent = '';
-                document.getElementById('totalLitres').textContent = totalMl.toFixed(0);
-
-                // Update labels
-                document.querySelectorAll('.result-item')[0].querySelector('.result-value').innerHTML = 
-                    `<span id="hypoLitres">${hypoMl.toFixed(0)}</span> ml`;
-                document.querySelectorAll('.result-item')[1].querySelector('.result-value').innerHTML = 
-                    `<span id="waterLitres">${waterMl.toFixed(0)}</span> ml`;
-                document.querySelectorAll('.result-item')[2].querySelector('.result-value').innerHTML = 
-                    `<span id="surfactantMl">${surfactantMl.toFixed(0)}</span> ml`;
-                document.querySelectorAll('.result-item')[3].querySelector('.result-value').innerHTML = 
-                    `<span id="totalLitres">${totalMl.toFixed(0)}</span> ml`;
+                // Update the result values only (not the entire HTML structure)
+                const resultItems = document.querySelectorAll('.result-item');
+                resultItems[0].querySelector('.result-value').innerHTML = 
+                    `${hypoMl.toFixed(0)} ml`;
+                resultItems[1].querySelector('.result-value').innerHTML = 
+                    `${waterMl.toFixed(0)} ml`;
+                resultItems[2].querySelector('.result-value').innerHTML = 
+                    `${surfactantMl.toFixed(0)} ml`;
+                resultItems[3].querySelector('.result-value').innerHTML = 
+                    `${totalMl.toFixed(0)} ml`;
             } else {
                 const hypoMl = calculatedHypoLitres * 1000;
                 const waterMl = calculatedWaterLitres * 1000;
                 const surfactantMl = calculatedSurfactantLitres * 1000;
 
-                document.querySelectorAll('.result-item')[0].querySelector('.result-value').innerHTML = 
-                    `<span id="hypoLitres">${calculatedHypoLitres.toFixed(2)}</span> L (<span id="hypoMl">${hypoMl.toFixed(0)}</span> ml)`;
-                document.querySelectorAll('.result-item')[1].querySelector('.result-value').innerHTML = 
-                    `<span id="waterLitres">${calculatedWaterLitres.toFixed(2)}</span> L (<span id="waterMl">${waterMl.toFixed(0)}</span> ml)`;
-                document.querySelectorAll('.result-item')[2].querySelector('.result-value').innerHTML = 
-                    `<span id="surfactantMl">${surfactantMl.toFixed(0)}</span> ml (<span id="surfactantLitres">${calculatedSurfactantLitres.toFixed(3)}</span> L)`;
-                document.querySelectorAll('.result-item')[3].querySelector('.result-value').innerHTML = 
-                    `<span id="totalLitres">${calculatedTankSize.toFixed(2)}</span> L`;
+                // Update the result values only (not the entire HTML structure)
+                const resultItems = document.querySelectorAll('.result-item');
+                resultItems[0].querySelector('.result-value').innerHTML = 
+                    `${calculatedHypoLitres.toFixed(2)} L (${hypoMl.toFixed(0)} ml)`;
+                resultItems[1].querySelector('.result-value').innerHTML = 
+                    `${calculatedWaterLitres.toFixed(2)} L (${waterMl.toFixed(0)} ml)`;
+                resultItems[2].querySelector('.result-value').innerHTML = 
+                    `${surfactantMl.toFixed(0)} ml (${calculatedSurfactantLitres.toFixed(3)} L)`;
+                resultItems[3].querySelector('.result-value').innerHTML = 
+                    `${calculatedTankSize.toFixed(2)} L`;
             }
 
             // Update ratio (stays the same regardless of units)
