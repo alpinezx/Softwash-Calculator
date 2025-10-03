@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soft Wash Calculator (UK)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .calculator {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #34495e;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            display: none;
+        }
+        .results.show {
+            display: block;
+        }
+        .result-item {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+        }
+        .result-label {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .result-value {
+            color: #27ae60;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            color: #856404;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #17a2b8;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1>🧪 Soft Wash Calculator (UK)</h1>
+        
+        <div class="info">
+            <strong>Note:</strong> This calculator helps you mix sodium hypochlorite (bleach) solutions for soft washing. Always wear appropriate PPE and follow safety guidelines.
+        </div>
+
+        <div class="input-group">
+            <label for="unitToggle">Display Units (Litres/ml):</label>
+            <select id="unitToggle" onchange="updateDisplay()">
+                <option value="litres">Litres (L)</option>
+                <option value="millilitres">Millilitres (ml)</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="tankSize">Total Tank/Batch Size (Litres/ml):</label>
+            <input type="number" id="tankSize" value="100" min="1" step="0.1">
+        </div>
+
+        <div class="input-group">
+            <label for="concentrate">Sodium Hypochlorite Concentrate Strength (%):</label>
+            <input type="number" id="concentrate" value="15" min="0.1" max="15" step="0.1">
+        </div>
+
+        <div class="input-group">
+            <label for="desired">Desired Final Strength (%):</label>
+            <input type="number" id="desired" value="1" min="0.1" max="15" step="0.1">
+        </div>
+
+        <div class="input-group">
+            <label for="surfactantRatio">Surfactant Ratio (parts surfactant : parts sodium hypochlorite):</label>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <input type="number" id="surfactantParts" value="1" min="0" step="0.1" style="width: 80px;">
+                <span style="font-weight: bold;">:</span>
+                <input type="number" id="hypoParts" value="50" min="1" step="1" style="width: 80px;">
+            </div>
+            <small style="color: #666;">Example: 1:50 means 1 part surfactant to 50 parts sodium hypochlorite</small>
+        </div>
+
+        <button onclick="calculate()">Calculate Mix</button>
+
+        <div id="results" class="results">
+            <h2 style="color: #2c3e50; margin-top: 0;">Mix Recipe:</h2>
+            
+            <div class="result-item">
+                <span class="result-label">Sodium Hypochlorite (<span id="concentrateDisplay"></span>%):</span>
+                <div class="result-value"><span id="hypoLitres"></span> L (<span id="hypoMl"></span> ml)</div>
+            </div>
+
+            <div class="result-item">
+                <span class="result-label">Water:</span>
+                <div class="result-value"><span id="waterLitres"></span> L (<span id="waterMl"></span> ml)</div>
+            </div>
+
+            <div class="result-item">
+                <span class="result-label">Surfactant:</span>
+                <div class="result-value"><span id="surfactantMl"></span> ml (<span id="surfactantLitres"></span> L)</div>
+            </div>
+
+            <div class="result-item" style="background-color: #d4edda; border: 2px solid #28a745;">
+                <span class="result-label">Total Volume:</span>
+                <div class="result-value"><span id="totalLitres"></span> L</div>
+            </div>
+
+            <div class="result-item">
+                <span class="result-label">Mix Ratio:</span>
+                <div style="color: #2c3e50; font-weight: bold; font-size: 16px;">
+                    <span id="ratio"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ Safety Warning:</strong> Always add sodium hypochlorite to water, never water to sodium hypochlorite. Wear appropriate PPE including gloves, eye protection, and protective clothing. Store chemicals safely and follow all local regulations.
+        </div>
+    </div>
+
+    <script>
+        // Global variables to store calculation results
+        let calculatedHypoLitres = 0;
+        let calculatedWaterLitres = 0;
+        let calculatedSurfactantLitres = 0;
+        let calculatedTankSize = 0;
+        let calculatedConcentrate = 0;
+
+        function updateDisplay() {
+            // Only update if we have calculated values
+            if (calculatedTankSize === 0) return;
+
+            const unit = document.getElementById('unitToggle').value;
+            const isMillilitres = unit === 'millilitres';
+
+            // Convert and display results
+            if (isMillilitres) {
+                const hypoMl = calculatedHypoLitres * 1000;
+                const waterMl = calculatedWaterLitres * 1000;
+                const surfactantMl = calculatedSurfactantLitres * 1000;
+                const totalMl = calculatedTankSize * 1000;
+
+                document.getElementById('hypoLitres').textContent = hypoMl.toFixed(0);
+                document.getElementById('hypoMl').textContent = '';
+                document.getElementById('waterLitres').textContent = waterMl.toFixed(0);
+                document.getElementById('waterMl').textContent = '';
+                document.getElementById('surfactantMl').textContent = surfactantMl.toFixed(0);
+                document.getElementById('surfactantLitres').textContent = '';
+                document.getElementById('totalLitres').textContent = totalMl.toFixed(0);
+
+                // Update labels
+                document.querySelectorAll('.result-item')[0].querySelector('.result-value').innerHTML = 
+                    `<span id="hypoLitres">${hypoMl.toFixed(0)}</span> ml`;
+                document.querySelectorAll('.result-item')[1].querySelector('.result-value').innerHTML = 
+                    `<span id="waterLitres">${waterMl.toFixed(0)}</span> ml`;
+                document.querySelectorAll('.result-item')[2].querySelector('.result-value').innerHTML = 
+                    `<span id="surfactantMl">${surfactantMl.toFixed(0)}</span> ml`;
+                document.querySelectorAll('.result-item')[3].querySelector('.result-value').innerHTML = 
+                    `<span id="totalLitres">${totalMl.toFixed(0)}</span> ml`;
+            } else {
+                const hypoMl = calculatedHypoLitres * 1000;
+                const waterMl = calculatedWaterLitres * 1000;
+                const surfactantMl = calculatedSurfactantLitres * 1000;
+
+                document.querySelectorAll('.result-item')[0].querySelector('.result-value').innerHTML = 
+                    `<span id="hypoLitres">${calculatedHypoLitres.toFixed(2)}</span> L (<span id="hypoMl">${hypoMl.toFixed(0)}</span> ml)`;
+                document.querySelectorAll('.result-item')[1].querySelector('.result-value').innerHTML = 
+                    `<span id="waterLitres">${calculatedWaterLitres.toFixed(2)}</span> L (<span id="waterMl">${waterMl.toFixed(0)}</span> ml)`;
+                document.querySelectorAll('.result-item')[2].querySelector('.result-value').innerHTML = 
+                    `<span id="surfactantMl">${surfactantMl.toFixed(0)}</span> ml (<span id="surfactantLitres">${calculatedSurfactantLitres.toFixed(3)}</span> L)`;
+                document.querySelectorAll('.result-item')[3].querySelector('.result-value').innerHTML = 
+                    `<span id="totalLitres">${calculatedTankSize.toFixed(2)}</span> L`;
+            }
+
+            // Update ratio (stays the same regardless of units)
+            const ratio = calculatedWaterLitres / calculatedHypoLitres;
+            document.getElementById('ratio').textContent = `1:${ratio.toFixed(1)} (Sodium Hypochlorite:Water)`;
+        }
+
+        function calculate() {
+            // Get input values
+            let tankSize = parseFloat(document.getElementById('tankSize').value);
+            const concentrate = parseFloat(document.getElementById('concentrate').value);
+            const desired = parseFloat(document.getElementById('desired').value);
+            const surfactantParts = parseFloat(document.getElementById('surfactantParts').value);
+            const hypoParts = parseFloat(document.getElementById('hypoParts').value);
+            const unit = document.getElementById('unitToggle').value;
+
+            // Convert tank size to litres if in millilitres
+            if (unit === 'millilitres') {
+                tankSize = tankSize / 1000;
+            }
+
+            // Validate inputs
+            if (isNaN(tankSize) || isNaN(concentrate) || isNaN(desired) || isNaN(surfactantParts) || isNaN(hypoParts)) {
+                alert('Please enter valid numbers for all fields.');
+                return;
+            }
+
+            if (tankSize <= 0) {
+                alert('Tank size must be greater than 0.');
+                return;
+            }
+
+            if (concentrate <= 0 || concentrate > 15) {
+                alert('Concentrate strength must be between 0.1% and 15%.');
+                return;
+            }
+
+            if (desired <= 0 || desired > concentrate) {
+                alert('Desired strength must be between 0.1% and your concentrate strength.');
+                return;
+            }
+
+            if (surfactantParts < 0 || hypoParts <= 0) {
+                alert('Surfactant ratio values must be valid (surfactant >= 0, hypochlorite > 0).');
+                return;
+            }
+
+            // Calculate sodium hypochlorite needed (C1V1 = C2V2)
+            const hypoLitres = (desired * tankSize) / concentrate;
+            
+            // Calculate water needed
+            const waterLitres = tankSize - hypoLitres;
+
+            // Calculate surfactant needed based on ratio to sodium hypochlorite
+            const surfactantLitres = (surfactantParts / hypoParts) * hypoLitres;
+
+            // Store calculated values globally
+            calculatedHypoLitres = hypoLitres;
+            calculatedWaterLitres = waterLitres;
+            calculatedSurfactantLitres = surfactantLitres;
+            calculatedTankSize = tankSize;
+            calculatedConcentrate = concentrate;
+
+            // Display concentrate strength
+            document.getElementById('concentrateDisplay').textContent = concentrate.toFixed(1);
+
+            // Show results
+            document.getElementById('results').classList.add('show');
+
+            // Update display based on selected unit
+            updateDisplay();
+        }
+
+        // Allow Enter key to calculate
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                calculate();
+            }
+        });
+    </script>
+</body>
+</html>
