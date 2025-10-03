@@ -133,13 +133,9 @@
         </div>
 
         <div class="input-group">
-            <label for="surfactantRatio">Surfactant Ratio (parts surfactant : parts sodium hypochlorite):</label>
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <input type="number" id="surfactantParts" value="1" min="0" step="0.1" style="width: 80px;">
-                <span style="font-weight: bold;">:</span>
-                <input type="number" id="hypoParts" value="50" min="1" step="1" style="width: 80px;">
-            </div>
-            <small style="color: #666;">Example: 1:50 means 1 part surfactant to 50 parts sodium hypochlorite</small>
+            <label for="surfactant">Surfactant (ml per litre of total mix):</label>
+            <input type="number" id="surfactant" value="20" min="0" step="0.1">
+            <small style="color: #666;">Typical UK surfactants: 15-20ml/L | US surfactants: 7-10ml/L</small>
         </div>
 
         <button onclick="calculate()">Calculate Mix</button>
@@ -262,8 +258,7 @@
             let tankSize = parseFloat(document.getElementById('tankSize').value);
             const concentrate = parseFloat(document.getElementById('concentrate').value);
             const desired = parseFloat(document.getElementById('desired').value);
-            const surfactantParts = parseFloat(document.getElementById('surfactantParts').value);
-            const hypoParts = parseFloat(document.getElementById('hypoParts').value);
+            const surfactantPerLitre = parseFloat(document.getElementById('surfactant').value);
             const unit = document.getElementById('unitToggle').value;
 
             // Convert tank size to litres if in millilitres
@@ -272,7 +267,7 @@
             }
 
             // Validate inputs
-            if (isNaN(tankSize) || isNaN(concentrate) || isNaN(desired) || isNaN(surfactantParts) || isNaN(hypoParts)) {
+            if (isNaN(tankSize) || isNaN(concentrate) || isNaN(desired) || isNaN(surfactantPerLitre)) {
                 alert('Please enter valid numbers for all fields.');
                 return;
             }
@@ -292,8 +287,8 @@
                 return;
             }
 
-            if (surfactantParts < 0 || hypoParts <= 0) {
-                alert('Surfactant ratio values must be valid (surfactant >= 0, hypochlorite > 0).');
+            if (surfactantPerLitre < 0) {
+                alert('Surfactant amount cannot be negative.');
                 return;
             }
 
@@ -303,8 +298,9 @@
             // Calculate water needed
             const waterLitres = tankSize - hypoLitres;
 
-            // Calculate surfactant needed based on ratio to sodium hypochlorite
-            const surfactantLitres = (surfactantParts / hypoParts) * hypoLitres;
+            // Calculate surfactant needed based on total volume
+            const surfactantMl = surfactantPerLitre * tankSize;
+            const surfactantLitres = surfactantMl / 1000;
 
             // Store calculated values globally
             calculatedHypoLitres = hypoLitres;
