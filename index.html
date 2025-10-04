@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soft Wash Calculator (UK)</title>
+    <title>Soft Wash Calculator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -20,9 +20,9 @@
         }
         .tabs {
             display: flex;
-            gap: 0;
+            flex-direction: column;
+            gap: 10px;
             margin-bottom: 30px;
-            border-bottom: 2px solid #ddd;
         }
         .tabs .tab {
             padding: 15px 30px;
@@ -33,8 +33,19 @@
             font-weight: bold;
             color: white !important;
             transition: all 0.3s;
-            border-top-left-radius: 5px;
-            border-top-right-radius: 5px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                margin: 20px auto;
+                padding: 10px;
+            }
+            .calculator {
+                padding: 20px;
+            }
         }
         .tabs .tab:hover {
             background-color: #7f8c8d !important;
@@ -136,7 +147,7 @@
 </head>
 <body>
     <div class="calculator">
-        <h1>🧪 Soft Wash Calculator (UK)</h1>
+        <h1>🧪 Soft Wash Calculator</h1>
         
         <div class="tabs">
             <button class="tab active" onclick="switchTab('sh')">Sodium Hypochlorite Calculator</button>
@@ -151,16 +162,17 @@
         </div>
 
         <div class="input-group">
-            <label for="unitToggle">Display Units (Litres/ml):</label>
-            <select id="unitToggle" onchange="updateDisplay()">
+            <label for="unitToggle">Display Units:</label>
+            <select id="unitToggle" onchange="convertTankSizeUnit()">
                 <option value="litres">Litres (L)</option>
                 <option value="millilitres">Millilitres (ml)</option>
+                <option value="gallons">US Gallons (gal)</option>
             </select>
         </div>
 
         <div class="input-group">
-            <label for="tankSize">Total Tank/Batch Size (Litres/ml):</label>
-            <input type="number" id="tankSize" value="100" min="1" step="0.1">
+            <label for="tankSize">Total Amount to Make (<span id="tankSizeUnit">L</span>):</label>
+            <input type="number" id="tankSize" value="5" min="1" step="0.1">
         </div>
 
         <div class="input-group">
@@ -176,7 +188,7 @@
         <div class="input-group">
             <label for="surfactant">Surfactant (ml per litre of total mix):</label>
             <input type="number" id="surfactant" value="20" min="0" step="0.1">
-            <small style="color: #666;">Typical UK surfactants: 15-20ml/L | US surfactants: 7-10ml/L</small>
+            <small style="color: #666;">Auto-adjusts: UK surfactants ~20ml/L | US surfactants ~8ml/L</small>
         </div>
 
         <button onclick="calculate()">Calculate Mix</button>
@@ -237,16 +249,17 @@
         </div>
 
         <div class="input-group">
-            <label for="ratioUnitToggle">Display Units (Litres/ml):</label>
-            <select id="ratioUnitToggle" onchange="updateRatioDisplay()">
-                <option value="litres">Litres (L)</option>
+            <label for="ratioUnitToggle">Display Units:</label>
+            <select id="ratioUnitToggle" onchange="convertRatioVolumeUnit()">
+                <option value="litres" selected>Litres (L)</option>
                 <option value="millilitres">Millilitres (ml)</option>
+                <option value="gallons">US Gallons (gal)</option>
             </select>
         </div>
 
         <div class="input-group">
-            <label for="ratioTotalVolume">Total Volume to Make (Litres/ml):</label>
-            <input type="number" id="ratioTotalVolume" value="10" min="0.1" step="0.1">
+            <label for="ratioTotalVolume">Total Amount to Make (<span id="ratioVolumeUnit">L</span>):</label>
+            <input type="number" id="ratioTotalVolume" value="5" min="0.1" step="0.1">
         </div>
 
         <div class="input-group">
@@ -319,6 +332,42 @@
         let calculatedRatioChemical = 0;
         let calculatedRatioWater = 0;
         let calculatedRatioTotal = 0;
+        let previousRatioUnit = 'litres'; // Track previous unit for ratio calculator
+
+        function convertRatioVolumeUnit() {
+            const currentUnit = document.getElementById('ratioUnitToggle').value;
+            const volumeInput = document.getElementById('ratioTotalVolume');
+            const unitLabel = document.getElementById('ratioVolumeUnit');
+            let currentValue = parseFloat(volumeInput.value);
+
+            // Handle conversion between UK units (litres/ml) or set US default
+            if (currentUnit === 'gallons') {
+                // Switching to gallons - use fixed default
+                volumeInput.value = 5;
+                unitLabel.textContent = 'gal';
+            } else if (previousRatioUnit === 'gallons') {
+                // Switching from gallons to UK units - use default
+                if (currentUnit === 'millilitres') {
+                    volumeInput.value = 5000;
+                } else {
+                    volumeInput.value = 5;
+                }
+                unitLabel.textContent = currentUnit === 'millilitres' ? 'ml' : 'L';
+            } else {
+                // Converting between UK units (litres ↔ millilitres)
+                if (!isNaN(currentValue) && currentValue > 0) {
+                    if (previousRatioUnit === 'litres' && currentUnit === 'millilitres') {
+                        volumeInput.value = (currentValue * 1000).toFixed(0);
+                    } else if (previousRatioUnit === 'millilitres' && currentUnit === 'litres') {
+                        volumeInput.value = parseFloat((currentValue / 1000).toFixed(2));
+                    }
+                }
+                unitLabel.textContent = currentUnit === 'millilitres' ? 'ml' : 'L';
+            }
+
+            previousRatioUnit = currentUnit;
+            updateRatioDisplay();
+        }
 
         function updateRatioDisplay() {
             // Only update if we have calculated values
@@ -326,6 +375,7 @@
 
             const unit = document.getElementById('ratioUnitToggle').value;
             const isMillilitres = unit === 'millilitres';
+            const isGallons = unit === 'gallons';
 
             if (isMillilitres) {
                 const chemicalMl = calculatedRatioChemical * 1000;
@@ -335,16 +385,24 @@
                 document.getElementById('ratioChemicalAmount').textContent = `${chemicalMl.toFixed(0)} ml`;
                 document.getElementById('ratioWaterAmount').textContent = `${waterMl.toFixed(0)} ml`;
                 document.getElementById('ratioTotalAmount').textContent = `${totalMl.toFixed(0)} ml`;
-            } else {
-                const chemicalMl = calculatedRatioChemical * 1000;
-                const waterMl = calculatedRatioWater * 1000;
+            } else if (isGallons) {
+                const chemicalGal = calculatedRatioChemical / 3.78541;
+                const waterGal = calculatedRatioWater / 3.78541;
+                const totalGal = calculatedRatioTotal / 3.78541;
 
                 document.getElementById('ratioChemicalAmount').textContent = 
-                    `${calculatedRatioChemical.toFixed(2)} L (${chemicalMl.toFixed(0)} ml)`;
+                    `${parseFloat(chemicalGal.toFixed(2))} gal`;
                 document.getElementById('ratioWaterAmount').textContent = 
-                    `${calculatedRatioWater.toFixed(2)} L (${waterMl.toFixed(0)} ml)`;
+                    `${parseFloat(waterGal.toFixed(2))} gal`;
                 document.getElementById('ratioTotalAmount').textContent = 
-                    `${calculatedRatioTotal.toFixed(2)} L`;
+                    `${parseFloat(totalGal.toFixed(2))} gal`;
+            } else {
+                document.getElementById('ratioChemicalAmount').textContent = 
+                    `${parseFloat(calculatedRatioChemical.toFixed(2))} L`;
+                document.getElementById('ratioWaterAmount').textContent = 
+                    `${parseFloat(calculatedRatioWater.toFixed(2))} L`;
+                document.getElementById('ratioTotalAmount').textContent = 
+                    `${parseFloat(calculatedRatioTotal.toFixed(2))} L`;
             }
         }
 
@@ -354,9 +412,11 @@
             const waterParts = parseFloat(document.getElementById('ratioWater').value);
             const unit = document.getElementById('ratioUnitToggle').value;
 
-            // Convert to litres if in millilitres
+            // Convert to litres if in millilitres or gallons
             if (unit === 'millilitres') {
                 totalVolume = totalVolume / 1000;
+            } else if (unit === 'gallons') {
+                totalVolume = totalVolume * 3.78541;
             }
 
             // Validate inputs
@@ -393,6 +453,50 @@
         let calculatedSurfactantLitres = 0;
         let calculatedTankSize = 0;
         let calculatedConcentrate = 0;
+        let previousUnit = 'litres'; // Track previous unit to know which direction to convert
+
+        function convertTankSizeUnit() {
+            const currentUnit = document.getElementById('unitToggle').value;
+            const tankSizeInput = document.getElementById('tankSize');
+            const surfactantInput = document.getElementById('surfactant');
+            const concentrateInput = document.getElementById('concentrate');
+            const unitLabel = document.getElementById('tankSizeUnit');
+            let currentValue = parseFloat(tankSizeInput.value);
+
+            // Handle conversion between UK units (litres/ml) or set US default
+            if (currentUnit === 'gallons') {
+                // Switching to gallons - use fixed default
+                tankSizeInput.value = 5;
+                surfactantInput.value = 8;
+                concentrateInput.value = 12.5;
+                unitLabel.textContent = 'gal';
+            } else if (previousUnit === 'gallons') {
+                // Switching from gallons to UK units - use default
+                if (currentUnit === 'millilitres') {
+                    tankSizeInput.value = 5000;
+                } else {
+                    tankSizeInput.value = 5;
+                }
+                surfactantInput.value = 20;
+                concentrateInput.value = 15;
+                unitLabel.textContent = currentUnit === 'millilitres' ? 'ml' : 'L';
+            } else {
+                // Converting between UK units (litres ↔ millilitres)
+                if (!isNaN(currentValue) && currentValue > 0) {
+                    if (previousUnit === 'litres' && currentUnit === 'millilitres') {
+                        tankSizeInput.value = (currentValue * 1000).toFixed(0);
+                    } else if (previousUnit === 'millilitres' && currentUnit === 'litres') {
+                        tankSizeInput.value = parseFloat((currentValue / 1000).toFixed(2));
+                    }
+                }
+                surfactantInput.value = 20;
+                concentrateInput.value = 15;
+                unitLabel.textContent = currentUnit === 'millilitres' ? 'ml' : 'L';
+            }
+
+            previousUnit = currentUnit;
+            updateDisplay();
+        }
 
         function updateDisplay() {
             // Only update if we have calculated values
@@ -400,6 +504,7 @@
 
             const unit = document.getElementById('unitToggle').value;
             const isMillilitres = unit === 'millilitres';
+            const isGallons = unit === 'gallons';
 
             // Convert and display results
             if (isMillilitres) {
@@ -418,6 +523,23 @@
                     `${surfactantMl.toFixed(0)} ml`;
                 resultItems[3].querySelector('.result-value').innerHTML = 
                     `${totalMl.toFixed(0)} ml`;
+            } else if (isGallons) {
+                const hypoGal = calculatedHypoLitres / 3.78541;
+                const waterGal = calculatedWaterLitres / 3.78541;
+                const surfactantFlOz = calculatedSurfactantLitres * 33.814; // Convert litres to fl oz
+                const surfactantGal = calculatedSurfactantLitres / 3.78541;
+                const totalGal = calculatedTankSize / 3.78541;
+
+                // Update the result values only (not the entire HTML structure)
+                const resultItems = document.querySelectorAll('.result-item');
+                resultItems[0].querySelector('.result-value').innerHTML = 
+                    `${parseFloat(hypoGal.toFixed(2))} gal`;
+                resultItems[1].querySelector('.result-value').innerHTML = 
+                    `${parseFloat(waterGal.toFixed(2))} gal`;
+                resultItems[2].querySelector('.result-value').innerHTML = 
+                    `${parseFloat(surfactantFlOz.toFixed(1))} fl oz (${parseFloat(surfactantGal.toFixed(3))} gal)`;
+                resultItems[3].querySelector('.result-value').innerHTML = 
+                    `${parseFloat(totalGal.toFixed(2))} gal`;
             } else {
                 const hypoMl = calculatedHypoLitres * 1000;
                 const waterMl = calculatedWaterLitres * 1000;
@@ -426,22 +548,26 @@
                 // Update the result values only (not the entire HTML structure)
                 const resultItems = document.querySelectorAll('.result-item');
                 resultItems[0].querySelector('.result-value').innerHTML = 
-                    `${calculatedHypoLitres.toFixed(2)} L (${hypoMl.toFixed(0)} ml)`;
+                    `${parseFloat(calculatedHypoLitres.toFixed(2))} L`;
                 resultItems[1].querySelector('.result-value').innerHTML = 
-                    `${calculatedWaterLitres.toFixed(2)} L (${waterMl.toFixed(0)} ml)`;
+                    `${parseFloat(calculatedWaterLitres.toFixed(2))} L`;
                 resultItems[2].querySelector('.result-value').innerHTML = 
-                    `${surfactantMl.toFixed(0)} ml (${calculatedSurfactantLitres.toFixed(3)} L)`;
+                    `${surfactantMl.toFixed(0)} ml (${parseFloat(calculatedSurfactantLitres.toFixed(3))} L)`;
                 resultItems[3].querySelector('.result-value').innerHTML = 
-                    `${calculatedTankSize.toFixed(2)} L`;
+                    `${parseFloat(calculatedTankSize.toFixed(2))} L`;
             }
 
             // Update ratio (stays the same regardless of units)
             const ratio = calculatedWaterLitres / calculatedHypoLitres;
-            document.getElementById('ratio').textContent = `1:${ratio.toFixed(1)} (Sodium Hypochlorite:Water)`;
+            const roundedRatio = Math.round(ratio * 10) / 10; // Round to 1 decimal place
+            const ratioDisplay = roundedRatio % 1 === 0 ? roundedRatio.toFixed(0) : roundedRatio.toFixed(1);
+            document.getElementById('ratio').textContent = `1:${ratioDisplay} (Sodium Hypochlorite:Water)`;
             
             // Calculate and display dilution ratio (hypo:water)
             const dilutionRatio = calculatedWaterLitres / calculatedHypoLitres;
-            document.getElementById('dilutionRatio').textContent = `1:${dilutionRatio.toFixed(1)}`;
+            const roundedDilution = Math.round(dilutionRatio * 10) / 10; // Round to 1 decimal place
+            const dilutionDisplay = roundedDilution % 1 === 0 ? roundedDilution.toFixed(0) : roundedDilution.toFixed(1);
+            document.getElementById('dilutionRatio').textContent = `1:${dilutionDisplay}`;
             
             // Display the final strength info
             const desiredStrength = (calculatedHypoLitres * calculatedConcentrate) / calculatedTankSize;
@@ -457,9 +583,11 @@
             const surfactantPerLitre = parseFloat(document.getElementById('surfactant').value);
             const unit = document.getElementById('unitToggle').value;
 
-            // Convert tank size to litres if in millilitres
+            // Convert tank size to litres if in millilitres or gallons
             if (unit === 'millilitres') {
                 tankSize = tankSize / 1000;
+            } else if (unit === 'gallons') {
+                tankSize = tankSize * 3.78541;
             }
 
             // Validate inputs
