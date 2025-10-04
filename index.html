@@ -147,7 +147,7 @@
 </head>
 <body>
     <div class="calculator">
-        <h1>🧪 Soft Wash Calculator</h1>
+        <h1>Soft Wash Calculator 🧪</h1>
         
         <div class="tabs">
             <button class="tab active" onclick="switchTab('sh')">Sodium Hypochlorite Calculator</button>
@@ -266,13 +266,13 @@
         </div>
 
         <div class="input-group">
-            <label>Mix Ratio (Chemical : Water):</label>
+            <label>Mix Ratio (Chemical : Diluent):</label>
             <div style="display: flex; gap: 10px; align-items: center;">
                 <input type="number" id="ratioChemical" value="1" min="0.1" step="0.1" style="width: 100px;">
                 <span style="font-weight: bold; font-size: 20px;">:</span>
                 <input type="number" id="ratioWater" value="8" min="0.1" step="0.1" style="width: 100px;">
             </div>
-            <small style="color: #666;">Example: BAC 50 is typically 1:8 (1 part BAC to 8 parts water)</small>
+            <small style="color: #666;"><strong>Diluent:</strong> Always check product specifications for the correct liquid to use as a diluent (water, solvent, etc.). Example: BAC 50 typically uses 1:8 ratio with water.</small>
         </div>
 
         <button onclick="calculateRatio()">Calculate Mix</button>
@@ -287,7 +287,7 @@
             </div>
 
             <div class="result-item">
-                <span class="result-label">Water:</span>
+                <span class="result-label">Diluent:</span>
                 <div class="result-value"><span id="ratioWaterAmount"></span></div>
             </div>
 
