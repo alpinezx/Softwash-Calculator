@@ -167,6 +167,7 @@
                 <option value="litres">Litres (L)</option>
                 <option value="millilitres">Millilitres (ml)</option>
                 <option value="gallons">US Gallons (gal)</option>
+                <option value="fluidounces">US Fluid Ounces (fl oz)</option>
             </select>
         </div>
 
@@ -255,6 +256,7 @@
                 <option value="litres" selected>Litres (L)</option>
                 <option value="millilitres">Millilitres (ml)</option>
                 <option value="gallons">US Gallons (gal)</option>
+                <option value="fluidounces">US Fluid Ounces (fl oz)</option>
             </select>
         </div>
 
@@ -341,7 +343,7 @@
         let calculatedRatioChemical = 0;
         let calculatedRatioWater = 0;
         let calculatedRatioTotal = 0;
-        let previousRatioUnit = 'litres'; // Track previous unit for ratio calculator
+        let previousRatioUnit = document.getElementById('ratioUnitToggle') ? document.getElementById('ratioUnitToggle').value : 'litres';
 
         function convertRatioVolumeUnit() {
             const currentUnit = document.getElementById('ratioUnitToggle').value;
@@ -349,21 +351,48 @@
             const unitLabel = document.getElementById('ratioVolumeUnit');
             let currentValue = parseFloat(volumeInput.value);
 
-            // Handle conversion between UK units (litres/ml) or set US default
-            if (currentUnit === 'gallons') {
-                // Switching to gallons - use fixed default
-                volumeInput.value = 5;
-                unitLabel.textContent = 'gal';
-            } else if (previousRatioUnit === 'gallons') {
-                // Switching from gallons to UK units - use default
-                if (currentUnit === 'millilitres') {
-                    volumeInput.value = 5000;
+            // If no change, do nothing
+            if (previousRatioUnit === currentUnit) {
+                return;
+            }
+
+            // Determine if we're switching between UK and US systems or within a system
+            const ukUnits = ['litres', 'millilitres'];
+            const usUnits = ['gallons', 'fluidounces'];
+            
+            const previousIsUK = ukUnits.includes(previousRatioUnit);
+            const currentIsUK = ukUnits.includes(currentUnit);
+            const previousIsUS = usUnits.includes(previousRatioUnit);
+            const currentIsUS = usUnits.includes(currentUnit);
+
+            // Switching between UK and US systems - reset to defaults
+            if ((previousIsUK && currentIsUS) || (previousIsUS && currentIsUK)) {
+                // Hide results when switching between systems
+                document.getElementById('ratio-results').classList.remove('show');
+                calculatedRatioChemical = 0;
+                calculatedRatioWater = 0;
+                calculatedRatioTotal = 0;
+                
+                if (currentIsUS) {
+                    // Switching to US system
+                    if (currentUnit === 'fluidounces') {
+                        volumeInput.value = 640; // 5 gallons = 640 fl oz
+                    } else {
+                        volumeInput.value = 5;
+                    }
+                    unitLabel.textContent = currentUnit === 'fluidounces' ? 'fl oz' : 'gal';
                 } else {
-                    volumeInput.value = 5;
+                    // Switching to UK system
+                    if (currentUnit === 'millilitres') {
+                        volumeInput.value = 5000;
+                    } else {
+                        volumeInput.value = 5;
+                    }
+                    unitLabel.textContent = currentUnit === 'millilitres' ? 'ml' : 'L';
                 }
-                unitLabel.textContent = currentUnit === 'millilitres' ? 'ml' : 'L';
-            } else {
-                // Converting between UK units (litres ↔ millilitres)
+            }
+            // Converting within UK system (litres ↔ millilitres)
+            else if (previousIsUK && currentIsUK) {
                 if (!isNaN(currentValue) && currentValue > 0) {
                     if (previousRatioUnit === 'litres' && currentUnit === 'millilitres') {
                         volumeInput.value = (currentValue * 1000).toFixed(0);
@@ -372,6 +401,17 @@
                     }
                 }
                 unitLabel.textContent = currentUnit === 'millilitres' ? 'ml' : 'L';
+            }
+            // Converting within US system (gallons ↔ fluid ounces)
+            else if (previousIsUS && currentIsUS) {
+                if (!isNaN(currentValue) && currentValue > 0) {
+                    if (previousRatioUnit === 'gallons' && currentUnit === 'fluidounces') {
+                        volumeInput.value = (currentValue * 128).toFixed(0);
+                    } else if (previousRatioUnit === 'fluidounces' && currentUnit === 'gallons') {
+                        volumeInput.value = parseFloat((currentValue / 128).toFixed(2));
+                    }
+                }
+                unitLabel.textContent = currentUnit === 'fluidounces' ? 'fl oz' : 'gal';
             }
 
             previousRatioUnit = currentUnit;
@@ -385,6 +425,7 @@
             const unit = document.getElementById('ratioUnitToggle').value;
             const isMillilitres = unit === 'millilitres';
             const isGallons = unit === 'gallons';
+            const isFluidOunces = unit === 'fluidounces';
 
             if (isMillilitres) {
                 const chemicalMl = calculatedRatioChemical * 1000;
@@ -405,6 +446,17 @@
                     `${parseFloat(waterGal.toFixed(2))} gal`;
                 document.getElementById('ratioTotalAmount').textContent = 
                     `${parseFloat(totalGal.toFixed(2))} gal`;
+            } else if (isFluidOunces) {
+                const chemicalFlOz = calculatedRatioChemical * 33.814;
+                const waterFlOz = calculatedRatioWater * 33.814;
+                const totalFlOz = calculatedRatioTotal * 33.814;
+
+                document.getElementById('ratioChemicalAmount').textContent = 
+                    `${parseFloat(chemicalFlOz.toFixed(1))} fl oz`;
+                document.getElementById('ratioWaterAmount').textContent = 
+                    `${parseFloat(waterFlOz.toFixed(1))} fl oz`;
+                document.getElementById('ratioTotalAmount').textContent = 
+                    `${parseFloat(totalFlOz.toFixed(1))} fl oz`;
             } else {
                 document.getElementById('ratioChemicalAmount').textContent = 
                     `${parseFloat(calculatedRatioChemical.toFixed(3))} L`;
@@ -421,11 +473,13 @@
             const waterParts = parseFloat(document.getElementById('ratioWater').value);
             const unit = document.getElementById('ratioUnitToggle').value;
 
-            // Convert to litres if in millilitres or gallons
+            // Convert to litres if in millilitres, gallons, or fluid ounces
             if (unit === 'millilitres') {
                 totalVolume = totalVolume / 1000;
             } else if (unit === 'gallons') {
                 totalVolume = totalVolume * 3.78541;
+            } else if (unit === 'fluidounces') {
+                totalVolume = totalVolume * 0.0295735; // fl oz to litres
             }
 
             // Validate inputs
@@ -462,7 +516,7 @@
         let calculatedSurfactantLitres = 0;
         let calculatedTankSize = 0;
         let calculatedConcentrate = 0;
-        let previousUnit = 'litres'; // Track previous unit to know which direction to convert
+        let previousUnit = document.getElementById('unitToggle') ? document.getElementById('unitToggle').value : 'litres';
 
         function convertTankSizeUnit() {
             const currentUnit = document.getElementById('unitToggle').value;
@@ -472,26 +526,54 @@
             const unitLabel = document.getElementById('tankSizeUnit');
             let currentValue = parseFloat(tankSizeInput.value);
 
-            // Handle conversion between UK units (litres/ml) or set US default
-            if (currentUnit === 'gallons') {
-                // Switching to gallons - use fixed default
-                tankSizeInput.value = 5;
-                surfactantInput.value = 8;
-                concentrateInput.value = 12.5;
-                unitLabel.textContent = 'gal';
-            } else if (previousUnit === 'gallons') {
-                // Switching from gallons to UK units - use default
-                if (currentUnit === 'millilitres') {
-                    tankSizeInput.value = 5000;
+            // If no change, do nothing
+            if (previousUnit === currentUnit) {
+                return;
+            }
+
+            // Determine if we're switching between UK and US systems or within a system
+            const ukUnits = ['litres', 'millilitres'];
+            const usUnits = ['gallons', 'fluidounces'];
+            
+            const previousIsUK = ukUnits.includes(previousUnit);
+            const currentIsUK = ukUnits.includes(currentUnit);
+            const previousIsUS = usUnits.includes(previousUnit);
+            const currentIsUS = usUnits.includes(currentUnit);
+
+            // Switching between UK and US systems - reset to defaults
+            if ((previousIsUK && currentIsUS) || (previousIsUS && currentIsUK)) {
+                // Hide results when switching between systems
+                document.getElementById('results').classList.remove('show');
+                calculatedHypoLitres = 0;
+                calculatedWaterLitres = 0;
+                calculatedSurfactantLitres = 0;
+                calculatedTankSize = 0;
+                calculatedConcentrate = 0;
+                
+                if (currentIsUS) {
+                    // Switching to US system
+                    if (currentUnit === 'fluidounces') {
+                        tankSizeInput.value = 640; // 5 gallons = 640 fl oz
+                    } else {
+                        tankSizeInput.value = 5;
+                    }
+                    surfactantInput.value = 8;
+                    concentrateInput.value = 12.5;
+                    unitLabel.textContent = currentUnit === 'fluidounces' ? 'fl oz' : 'gal';
                 } else {
-                    tankSizeInput.value = 5;
+                    // Switching to UK system
+                    if (currentUnit === 'millilitres') {
+                        tankSizeInput.value = 5000;
+                    } else {
+                        tankSizeInput.value = 5;
+                    }
+                    surfactantInput.value = 20;
+                    concentrateInput.value = 15;
+                    unitLabel.textContent = currentUnit === 'millilitres' ? 'ml' : 'L';
                 }
-                surfactantInput.value = 20;
-                concentrateInput.value = 15;
-                unitLabel.textContent = currentUnit === 'millilitres' ? 'ml' : 'L';
-            } else {
-                // Converting between UK units (litres ↔ millilitres)
-                // Don't reset surfactant or concentrate - keep user's custom values
+            } 
+            // Converting within UK system (litres ↔ millilitres)
+            else if (previousIsUK && currentIsUK) {
                 if (!isNaN(currentValue) && currentValue > 0) {
                     if (previousUnit === 'litres' && currentUnit === 'millilitres') {
                         tankSizeInput.value = (currentValue * 1000).toFixed(0);
@@ -500,6 +582,17 @@
                     }
                 }
                 unitLabel.textContent = currentUnit === 'millilitres' ? 'ml' : 'L';
+            }
+            // Converting within US system (gallons ↔ fluid ounces)
+            else if (previousIsUS && currentIsUS) {
+                if (!isNaN(currentValue) && currentValue > 0) {
+                    if (previousUnit === 'gallons' && currentUnit === 'fluidounces') {
+                        tankSizeInput.value = (currentValue * 128).toFixed(0);
+                    } else if (previousUnit === 'fluidounces' && currentUnit === 'gallons') {
+                        tankSizeInput.value = parseFloat((currentValue / 128).toFixed(2));
+                    }
+                }
+                unitLabel.textContent = currentUnit === 'fluidounces' ? 'fl oz' : 'gal';
             }
 
             previousUnit = currentUnit;
@@ -513,6 +606,7 @@
             const unit = document.getElementById('unitToggle').value;
             const isMillilitres = unit === 'millilitres';
             const isGallons = unit === 'gallons';
+            const isFluidOunces = unit === 'fluidounces';
 
             // Convert and display results
             if (isMillilitres) {
@@ -548,6 +642,22 @@
                     `${parseFloat(surfactantFlOz.toFixed(1))} fl oz (${parseFloat(surfactantGal.toFixed(2))} gal)`;
                 resultItems[3].querySelector('.result-value').innerHTML = 
                     `${parseFloat(totalGal.toFixed(2))} gal`;
+            } else if (isFluidOunces) {
+                const hypoFlOz = calculatedHypoLitres * 33.814;
+                const waterFlOz = calculatedWaterLitres * 33.814;
+                const surfactantFlOz = calculatedSurfactantLitres * 33.814;
+                const totalFlOz = calculatedTankSize * 33.814;
+
+                // Update the result values only (not the entire HTML structure)
+                const resultItems = document.querySelectorAll('.result-item');
+                resultItems[0].querySelector('.result-value').innerHTML = 
+                    `${parseFloat(hypoFlOz.toFixed(1))} fl oz`;
+                resultItems[1].querySelector('.result-value').innerHTML = 
+                    `${parseFloat(waterFlOz.toFixed(1))} fl oz`;
+                resultItems[2].querySelector('.result-value').innerHTML = 
+                    `${parseFloat(surfactantFlOz.toFixed(1))} fl oz`;
+                resultItems[3].querySelector('.result-value').innerHTML = 
+                    `${parseFloat(totalFlOz.toFixed(1))} fl oz`;
             } else {
                 const hypoMl = calculatedHypoLitres * 1000;
                 const waterMl = calculatedWaterLitres * 1000;
@@ -591,11 +701,13 @@
             const surfactantPerLitre = parseFloat(document.getElementById('surfactant').value);
             const unit = document.getElementById('unitToggle').value;
 
-            // Convert tank size to litres if in millilitres or gallons
+            // Convert tank size to litres if in millilitres, gallons, or fluid ounces
             if (unit === 'millilitres') {
                 tankSize = tankSize / 1000;
             } else if (unit === 'gallons') {
                 tankSize = tankSize * 3.78541;
+            } else if (unit === 'fluidounces') {
+                tankSize = tankSize * 0.0295735; // fl oz to litres
             }
 
             // Validate inputs
@@ -660,6 +772,10 @@
                 document.getElementById('tankSize').value = 5;
                 document.getElementById('surfactant').value = 8;
                 document.getElementById('concentrate').value = 12.5;
+            } else if (currentUnit === 'fluidounces') {
+                document.getElementById('tankSize').value = 640; // 5 gallons = 640 fl oz
+                document.getElementById('surfactant').value = 8;
+                document.getElementById('concentrate').value = 12.5;
             } else if (currentUnit === 'millilitres') {
                 document.getElementById('tankSize').value = 5000;
                 document.getElementById('surfactant').value = 20;
@@ -688,6 +804,8 @@
             // Reset based on current unit
             if (currentUnit === 'gallons') {
                 document.getElementById('ratioTotalVolume').value = 5;
+            } else if (currentUnit === 'fluidounces') {
+                document.getElementById('ratioTotalVolume').value = 640; // 5 gallons = 640 fl oz
             } else if (currentUnit === 'millilitres') {
                 document.getElementById('ratioTotalVolume').value = 5000;
             } else {
