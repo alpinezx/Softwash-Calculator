@@ -407,11 +407,11 @@
                     `${parseFloat(totalGal.toFixed(2))} gal`;
             } else {
                 document.getElementById('ratioChemicalAmount').textContent = 
-                    `${parseFloat(calculatedRatioChemical.toFixed(2))} L`;
+                    `${parseFloat(calculatedRatioChemical.toFixed(3))} L`;
                 document.getElementById('ratioWaterAmount').textContent = 
-                    `${parseFloat(calculatedRatioWater.toFixed(2))} L`;
+                    `${parseFloat(calculatedRatioWater.toFixed(3))} L`;
                 document.getElementById('ratioTotalAmount').textContent = 
-                    `${parseFloat(calculatedRatioTotal.toFixed(2))} L`;
+                    `${parseFloat(calculatedRatioTotal.toFixed(3))} L`;
             }
         }
 
@@ -556,13 +556,13 @@
                 // Update the result values only (not the entire HTML structure)
                 const resultItems = document.querySelectorAll('.result-item');
                 resultItems[0].querySelector('.result-value').innerHTML = 
-                    `${parseFloat(calculatedHypoLitres.toFixed(2))} L`;
+                    `${parseFloat(calculatedHypoLitres.toFixed(3))} L`;
                 resultItems[1].querySelector('.result-value').innerHTML = 
-                    `${parseFloat(calculatedWaterLitres.toFixed(2))} L`;
+                    `${parseFloat(calculatedWaterLitres.toFixed(3))} L`;
                 resultItems[2].querySelector('.result-value').innerHTML = 
                     `${surfactantMl.toFixed(0)} ml (${parseFloat(calculatedSurfactantLitres.toFixed(3))} L)`;
                 resultItems[3].querySelector('.result-value').innerHTML = 
-                    `${parseFloat(calculatedTankSize.toFixed(2))} L`;
+                    `${parseFloat(calculatedTankSize.toFixed(3))} L`;
             }
 
             // Update ratio (stays the same regardless of units)
