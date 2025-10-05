@@ -182,8 +182,15 @@
         </div>
 
         <div class="input-group">
+            <label for="presets">Common Presets:</label>
+            <select id="presets" onchange="applyPreset()">
+                <!-- Presets will be dynamically populated based on unit selection -->
+            </select>
+        </div>
+
+        <div class="input-group">
             <label for="desired">Desired Final Strength (%):</label>
-            <input type="number" id="desired" value="3" min="0.1" max="15" step="0.1">
+            <input type="number" id="desired" value="3" min="0.1" max="15" step="0.1" oninput="document.getElementById('presets').value = 'custom';">
         </div>
 
         <div class="input-group">
@@ -237,7 +244,7 @@
         </div>
 
         <div class="warning">
-            <strong>⚠️ Safety Warning:</strong> Always add sodium hypochlorite to water, never water to sodium hypochlorite. Wear appropriate PPE including gloves, eye protection, and protective clothing. Store chemicals safely and follow all local regulations.
+            <strong>⚠️ Safety Warning:</strong> Always add sodium hypochlorite to water, never water to sodium hypochlorite. Wear appropriate PPE including gloves, eye protection, and protective clothing. Keep children and pets away from the work area during application and until surfaces are fully rinsed and dry. Pre-wet and protect all surrounding plants, grass, and vegetation - sodium hypochlorite can cause damage or death to plant life. Rinse treated areas thoroughly. Store chemicals safely and follow all local regulations.
         </div>
         
         </div>
@@ -302,7 +309,7 @@
         </div>
 
         <div class="warning">
-            <strong>⚠️ Safety Warning:</strong> Always add chemicals to water, never water to chemicals. Wear appropriate PPE including gloves, eye protection, and protective clothing. Store chemicals safely and follow all local regulations.
+            <strong>⚠️ Safety Warning:</strong> Always add chemicals to water, never water to chemicals. Wear appropriate PPE including gloves, eye protection, and protective clothing. Keep children and pets away from the work area during application and until surfaces are fully rinsed and dry. Pre-wet and protect all surrounding plants, grass, and vegetation - many chemicals can cause damage or death to plant life. Rinse treated areas thoroughly. Store chemicals safely and follow all local regulations and manufacturer guidelines.
         </div>
 
         </div>
@@ -327,6 +334,67 @@
     </div>
 
     <script>
+        // Apply preset values to desired strength input
+        function applyPreset() {
+            const presetValue = document.getElementById('presets').value;
+            const desiredInput = document.getElementById('desired');
+            
+            if (presetValue !== 'custom') {
+                desiredInput.value = presetValue;
+                desiredInput.disabled = true;
+            } else {
+                desiredInput.disabled = false;
+            }
+        }
+
+        // Populate presets based on unit selection (UK vs US terminology)
+        function populatePresets() {
+            const unit = document.getElementById('unitToggle').value;
+            const presetsSelect = document.getElementById('presets');
+            const currentValue = presetsSelect.value;
+            
+            // Clear existing options
+            presetsSelect.innerHTML = '';
+            
+            // UK presets (Litres/Millilitres)
+            if (unit === 'litres' || unit === 'millilitres') {
+                presetsSelect.innerHTML = `
+                    <option value="custom">Custom</option>
+                    <option value="1">Light Render / uPVC Cleaning (1%)</option>
+                    <option value="1.5">Render / Cladding (1.5%)</option>
+                    <option value="2">Render / Fascia / Soffit (2%)</option>
+                    <option value="2.5">Heavy Render / Guttering (2.5%)</option>
+                    <option value="3">Roof Cleaning (3%)</option>
+                    <option value="4">Block Paving / Concrete (4%)</option>
+                    <option value="5">Heavy Roof / Severe Growth (5%)</option>
+                    <option value="6">Extreme Organic Growth (6%)</option>
+                `;
+            } 
+            // US presets (Gallons/Fluid Ounces)
+            else {
+                presetsSelect.innerHTML = `
+                    <option value="custom">Custom</option>
+                    <option value="1">Light House Wash (1%)</option>
+                    <option value="1.5">House Wash / Siding (1.5%)</option>
+                    <option value="2">House Wash / Vinyl Siding (2%)</option>
+                    <option value="3">Light Roof Cleaning (3%)</option>
+                    <option value="4">Concrete / Driveways (4%)</option>
+                    <option value="5">Heavy Roof Cleaning (5%)</option>
+                    <option value="6">Severe Organic Growth (6%)</option>
+                `;
+            }
+            
+            // Try to maintain the current selection if it exists
+            const options = Array.from(presetsSelect.options);
+            const matchingOption = options.find(opt => opt.value === currentValue);
+            if (matchingOption) {
+                presetsSelect.value = currentValue;
+            } else {
+                presetsSelect.value = 'custom';
+                document.getElementById('desired').disabled = false;
+            }
+        }
+
         // Tab switching function
         function switchTab(tabName) {
             // Hide all tab contents
@@ -581,6 +649,9 @@
                     concentrateInput.value = 15;
                     unitLabel.textContent = currentUnit === 'millilitres' ? 'ml' : 'L';
                 }
+                
+                // Update presets for new region
+                populatePresets();
             } 
             // Converting within UK system (litres ↔ millilitres)
             else if (previousIsUK && currentIsUK) {
@@ -797,6 +868,8 @@
             }
             
             document.getElementById('desired').value = 3;
+            document.getElementById('presets').value = 'custom';
+            document.getElementById('desired').disabled = false;
             document.getElementById('results').classList.remove('show');
             
             // Reset calculated values
@@ -837,6 +910,11 @@
             if (event.key === 'Enter') {
                 calculate();
             }
+        });
+
+        // Initialize presets when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            populatePresets();
         });
     </script>
 </body>
