@@ -151,7 +151,7 @@
         
         <div class="tabs">
             <button class="tab active" onclick="switchTab('sh')">Sodium Hypochlorite Calculator</button>
-            <button class="tab" onclick="switchTab('ratio')">Simple Ratio Calculator</button>
+            <button class="tab" onclick="switchTab('ratio')">Chemical Ratio Calculator</button>
         </div>
 
         <!-- Sodium Hypochlorite Tab -->
@@ -189,7 +189,7 @@
         <div class="input-group">
             <label for="surfactant">Surfactant (ml per litre of total mix):</label>
             <input type="number" id="surfactant" value="20" min="0" step="0.1">
-            <small style="color: #666;">Auto-adjusts: UK surfactants ~20ml/L | US surfactants ~8ml/L</small>
+            <small style="color: #666;">Average UK surfactants ~20ml/L | US surfactants ~8ml/L</small>
         </div>
 
         <button onclick="calculate()">Calculate Mix</button>
@@ -243,11 +243,11 @@
         </div>
         <!-- End Sodium Hypochlorite Tab -->
 
-        <!-- Simple Ratio Mix Tab -->
+        <!-- chemical Ratio Mix Tab -->
         <div id="ratio-tab" class="tab-content">
         
         <div class="info">
-            <strong>Note:</strong> This calculator is for simple ratio-based mixes (e.g., BAC 50, biocides, general cleaners). Enter your desired ratio and total volume.
+            <strong>Note:</strong> This calculator is for ratio-based chemical mixes (e.g., sodium hypochlorite, biocides, general cleaners). Enter your desired ratio and total volume.
         </div>
 
         <div class="input-group">
@@ -266,13 +266,17 @@
         </div>
 
         <div class="input-group">
-            <label>Mix Ratio (Chemical : Diluent):</label>
+            <label>Mix Ratio (<span style="color: #FF9800; font-weight: bold;">Chemical</span> : <span style="color: #2196F3; font-weight: bold;">Diluent</span>):</label>
             <div style="display: flex; gap: 10px; align-items: center;">
-                <input type="number" id="ratioChemical" value="1" min="0.1" step="0.1" style="width: 100px;">
+                <input type="number" id="ratioChemical" value="1" min="0.1" step="0.1" style="width: 100px; border: 2px solid #FF9800; font-weight: bold; color: #FF9800;">
                 <span style="font-weight: bold; font-size: 20px;">:</span>
-                <input type="number" id="ratioWater" value="8" min="0.1" step="0.1" style="width: 100px;">
+                <input type="number" id="ratioWater" value="1" min="0.1" step="0.1" style="width: 100px; border: 2px solid #2196F3; font-weight: bold; color: #2196F3;">
             </div>
-            <small style="color: #666;"><strong>Diluent:</strong> Always check product specifications for the correct liquid to use as a diluent (water, solvent, etc.).<br>Example: BAC 50 typically uses 1:8 ratio with water.</small>
+            <div style="background-color: #ffebee; border: 2px solid #f44336; padding: 12px; border-radius: 5px; margin-top: 10px; font-size: 14px; color: #c62828; font-weight: 500;">
+                <strong>⚠️ IMPORTANT - Diluent:</strong> Always check product specifications for the correct liquid to use as a diluent (water, solvent, etc.). Using the wrong diluent can be dangerous.
+                <br><br>
+                <strong>⚠️ IMPORTANT - Ratio Format:</strong> Some product labels invert the ratio of chemical to diluent (e.g., 1:3 vs 3:1). Please ensure your ratio is correct before calculating.
+            </div>
         </div>
 
         <button onclick="calculateRatio()">Calculate Mix</button>
@@ -302,7 +306,7 @@
         </div>
 
         </div>
-        <!-- End Simple Ratio Mix Tab -->
+        <!-- End Chemical Ratio Mix Tab -->
         
         <div style="text-align: center; margin-top: 30px; padding: 15px; background-color: #f8f9fa; border-radius: 5px; border: 1px solid #dee2e6;">
             <p style="margin: 0; color: #495057; font-size: 14px;">
@@ -339,7 +343,7 @@
             }
         }
 
-        // Simple ratio calculator function
+        // Chemical ratio calculator function
         let calculatedRatioChemical = 0;
         let calculatedRatioWater = 0;
         let calculatedRatioTotal = 0;
@@ -797,7 +801,7 @@
             calculatedConcentrate = 0;
         }
 
-        // Reset Simple Ratio calculator to defaults
+        // Reset Chemical Ratio calculator to defaults
         function resetRatio() {
             const currentUnit = document.getElementById('ratioUnitToggle').value;
             
@@ -813,7 +817,7 @@
             }
             
             document.getElementById('ratioChemical').value = 1;
-            document.getElementById('ratioWater').value = 8;
+            document.getElementById('ratioWater').value = 1;
             document.getElementById('ratio-results').classList.remove('show');
             
             // Reset calculated values
