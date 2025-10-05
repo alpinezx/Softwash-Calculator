@@ -194,7 +194,7 @@
         </div>
 
         <div class="input-group">
-            <label for="surfactant">Surfactant (ml per litre of total mix):</label>
+            <label for="surfactant">Surfactant (<span id="surfactantUnit">ml per litre</span> of total mix):</label>
             <input type="number" id="surfactant" value="20" min="0" step="0.1">
             <small id="surfactantGuidance" style="color: #666;">Average UK surfactants ~20ml/L</small>
         </div>
@@ -352,6 +352,8 @@
             const unit = document.getElementById('unitToggle').value;
             const presetsSelect = document.getElementById('presets');
             const surfactantGuidance = document.getElementById('surfactantGuidance');
+            const surfactantUnit = document.getElementById('surfactantUnit');
+            const surfactantInput = document.getElementById('surfactant');
             
             // Clear existing options
             presetsSelect.innerHTML = '';
@@ -370,6 +372,11 @@
                     <option value="6">Extreme Organic Growth (6%)</option>
                 `;
                 surfactantGuidance.textContent = 'Average UK surfactants ~20ml/L';
+                surfactantUnit.textContent = 'ml per litre';
+                // Only change default if user hasn't modified it from the previous default
+                if (surfactantInput.value == '1.5' || surfactantInput.value == '8') {
+                    surfactantInput.value = '20';
+                }
             } 
             // US presets (Gallons/Fluid Ounces)
             else {
@@ -383,7 +390,12 @@
                     <option value="5">Heavy Roof Cleaning (5%)</option>
                     <option value="6">Severe Organic Growth (6%)</option>
                 `;
-                surfactantGuidance.textContent = 'Average US surfactants ~8ml/L';
+                surfactantGuidance.textContent = 'Average US surfactants ~1-2 oz/gal';
+                surfactantUnit.textContent = 'oz per gallon';
+                // Only change default if user hasn't modified it from the previous default
+                if (surfactantInput.value == '20' || surfactantInput.value == '8') {
+                    surfactantInput.value = '1.5';
+                }
             }
             
             // Always default to custom
@@ -775,8 +787,16 @@
             let tankSize = parseFloat(document.getElementById('tankSize').value);
             const concentrate = parseFloat(document.getElementById('concentrate').value);
             const desired = parseFloat(document.getElementById('desired').value);
-            const surfactantPerLitre = parseFloat(document.getElementById('surfactant').value);
+            let surfactantPerLitre = parseFloat(document.getElementById('surfactant').value);
             const unit = document.getElementById('unitToggle').value;
+
+            // Convert surfactant from oz/gal to ml/L if using US units
+            if (unit === 'gallons' || unit === 'fluidounces') {
+                // User entered oz/gal, convert to ml/L
+                // 1 oz = 29.5735 ml, 1 gal = 3.78541 L
+                // oz/gal * 29.5735 / 3.78541 = ml/L
+                surfactantPerLitre = surfactantPerLitre * 29.5735 / 3.78541;
+            }
 
             // Convert tank size to litres if in millilitres, gallons, or fluid ounces
             if (unit === 'millilitres') {
@@ -853,11 +873,11 @@
             // Reset based on current unit
             if (currentUnit === 'gallons') {
                 document.getElementById('tankSize').value = 5;
-                document.getElementById('surfactant').value = 8;
+                document.getElementById('surfactant').value = 1.5;
                 document.getElementById('concentrate').value = 12.5;
             } else if (currentUnit === 'fluidounces') {
                 document.getElementById('tankSize').value = 640; // 5 gallons = 640 fl oz
-                document.getElementById('surfactant').value = 8;
+                document.getElementById('surfactant').value = 1.5;
                 document.getElementById('concentrate').value = 12.5;
             } else if (currentUnit === 'millilitres') {
                 document.getElementById('tankSize').value = 5000;
