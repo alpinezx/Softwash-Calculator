@@ -351,7 +351,6 @@
         function populatePresets() {
             const unit = document.getElementById('unitToggle').value;
             const presetsSelect = document.getElementById('presets');
-            const currentValue = presetsSelect.value;
             
             // Clear existing options
             presetsSelect.innerHTML = '';
@@ -384,15 +383,9 @@
                 `;
             }
             
-            // Try to maintain the current selection if it exists
-            const options = Array.from(presetsSelect.options);
-            const matchingOption = options.find(opt => opt.value === currentValue);
-            if (matchingOption) {
-                presetsSelect.value = currentValue;
-            } else {
-                presetsSelect.value = 'custom';
-                document.getElementById('desired').disabled = false;
-            }
+            // Always default to custom
+            presetsSelect.value = 'custom';
+            document.getElementById('desired').disabled = false;
         }
 
         // Tab switching function
@@ -868,8 +861,11 @@
             }
             
             document.getElementById('desired').value = 3;
+            
+            // Reset presets dropdown and re-enable desired input
             document.getElementById('presets').value = 'custom';
             document.getElementById('desired').disabled = false;
+            
             document.getElementById('results').classList.remove('show');
             
             // Reset calculated values
