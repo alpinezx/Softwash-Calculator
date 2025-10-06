@@ -162,7 +162,7 @@
         </div>
 
         <div class="input-group">
-            <label for="unitToggle">Display Units:</label>
+            <label for="unitToggle">Display Units</label>
             <select id="unitToggle" onchange="convertTankSizeUnit()">
                 <option value="litres">Litres (L)</option>
                 <option value="millilitres">Millilitres (ml)</option>
@@ -172,29 +172,29 @@
         </div>
 
         <div class="input-group">
-            <label for="tankSize">Total Amount to Make (<span id="tankSizeUnit">L</span>):</label>
+            <label for="tankSize">Total Amount to Make (<span id="tankSizeUnit">L</span>)</label>
             <input type="number" id="tankSize" value="5" min="1" step="0.1">
         </div>
 
         <div class="input-group">
-            <label for="concentrate">Sodium Hypochlorite Concentrate Strength (%):</label>
+            <label for="concentrate">Sodium Hypochlorite Concentrate Strength (%)</label>
             <input type="number" id="concentrate" value="15" min="0.1" max="15" step="0.1">
         </div>
 
         <div class="input-group">
-            <label for="presets">Common Presets:</label>
+            <label for="presets">Common Presets</label>
             <select id="presets" onchange="applyPreset()">
                 <!-- Presets will be dynamically populated based on unit selection -->
             </select>
         </div>
 
         <div class="input-group">
-            <label for="desired">Desired Final Strength (%):</label>
+            <label for="desired">Desired Final Strength (%)</label>
             <input type="number" id="desired" value="3" min="0.1" max="15" step="0.1" oninput="document.getElementById('presets').value = 'custom';">
         </div>
 
         <div class="input-group">
-            <label for="surfactant">Surfactant (<span id="surfactantUnit">ml per litre</span> of total mix):</label>
+            <label for="surfactant">Surfactant (<span id="surfactantUnit">ml per litre</span> of total mix)</label>
             <input type="number" id="surfactant" value="0" min="0" step="0.1">
             <small id="surfactantGuidance" style="color: #666;">Average UK surfactants ~20ml/L</small>
         </div>
@@ -269,7 +269,7 @@
         </div>
 
         <div class="input-group">
-            <label for="ratioUnitToggle">Display Units:</label>
+            <label for="ratioUnitToggle">Display Units</label>
             <select id="ratioUnitToggle" onchange="convertRatioVolumeUnit()">
                 <option value="litres" selected>Litres (L)</option>
                 <option value="millilitres">Millilitres (ml)</option>
@@ -279,12 +279,12 @@
         </div>
 
         <div class="input-group">
-            <label for="ratioTotalVolume">Total Amount to Make (<span id="ratioVolumeUnit">L</span>):</label>
+            <label for="ratioTotalVolume">Total Amount to Make (<span id="ratioVolumeUnit">L</span>)</label>
             <input type="number" id="ratioTotalVolume" value="5" min="0.1" step="0.1">
         </div>
 
         <div class="input-group">
-            <label>Mix Ratio (<span style="color: #FF9800; font-weight: bold;">Chemical</span> : <span style="color: #2196F3; font-weight: bold;">Diluent</span>):</label>
+            <label>Mix Ratio ( <span style="color: #FF9800; font-weight: bold;">Chemical</span> : <span style="color: #2196F3; font-weight: bold;">Diluent</span> )</label>
             <div style="display: flex; gap: 10px; align-items: center;">
                 <input type="number" id="ratioChemical" value="1" min="0.1" step="0.1" style="width: 100px; border: 2px solid #FF9800; font-weight: bold; color: #FF9800;">
                 <span style="font-weight: bold; font-size: 20px;">:</span>
