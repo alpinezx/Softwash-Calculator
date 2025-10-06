@@ -195,7 +195,7 @@
 
         <div class="input-group">
             <label for="surfactant">Surfactant (<span id="surfactantUnit">ml per litre</span> of total mix):</label>
-            <input type="number" id="surfactant" value="20" min="0" step="0.1">
+            <input type="number" id="surfactant" value="0" min="0" step="0.1">
             <small id="surfactantGuidance" style="color: #666;">Average UK surfactants ~20ml/L</small>
         </div>
 
@@ -244,7 +244,18 @@
         </div>
 
         <div class="warning">
-            <strong>⚠️ Safety Warning:</strong> Always add sodium hypochlorite to water, never water to sodium hypochlorite. Wear appropriate PPE including gloves, eye protection, and protective clothing. Keep children and pets away from the work area during application and until surfaces are fully rinsed and dry. Pre-wet and protect all surrounding plants, grass, and vegetation - sodium hypochlorite can cause damage or death to plant life. Sodium hypochlorite must be thoroughly rinsed from treated surfaces - control and capture runoff to prevent contamination of drains, waterways, ponds, and aquatic environments as it is highly toxic to fish and aquatic life. Store chemicals safely and follow all local regulations.
+            <strong>⚠️ Safety Warning:</strong>
+            <p style="margin: 10px 0 0 0;"><strong>Mixing:</strong> Always add sodium hypochlorite to water, never water to sodium hypochlorite.</p>
+            
+            <p style="margin: 10px 0 0 0;"><strong>Personal Protection:</strong> Wear appropriate PPE including gloves, eye protection, and protective clothing. Keep children and pets away from the work area during application and until surfaces are fully rinsed and dry.</p>
+            
+            <p style="margin: 10px 0 0 0;"><strong>Ventilation:</strong> Ensure adequate ventilation when mixing and applying sodium hypochlorite, especially in enclosed or indoor spaces. Sodium hypochlorite produces harmful fumes that can cause respiratory irritation. Work in well-ventilated areas or use appropriate respiratory protection.</p>
+            
+            <p style="margin: 10px 0 0 0;"><strong>Plant Protection:</strong> Pre-wet and protect all surrounding plants, grass, and vegetation - sodium hypochlorite can cause damage or death to plant life.</p>
+            
+            <p style="margin: 10px 0 0 0;"><strong>Environmental Protection:</strong> Sodium hypochlorite must be thoroughly rinsed from treated surfaces. Control and capture runoff to prevent contamination of drains, waterways, ponds, and aquatic environments as it is highly toxic to fish and aquatic life.</p>
+            
+            <p style="margin: 10px 0 0 0;"><strong>Storage:</strong> Store chemicals safely and follow all local regulations.</p>
         </div>
         
         </div>
@@ -309,7 +320,18 @@
         </div>
 
         <div class="warning">
-            <strong>⚠️ Safety Warning:</strong> Always add chemicals to water, never water to chemicals. Wear appropriate PPE including gloves, eye protection, and protective clothing. Keep children and pets away from the work area during application and until safe per manufacturer guidelines. Pre-wet and protect all surrounding plants, grass, and vegetation - many chemicals can cause damage or death to plant life. Control and capture any runoff to prevent contamination of drains, waterways, ponds, and aquatic environments - many chemicals are highly toxic to fish and aquatic life. Follow all manufacturer guidelines for application, dwell time, and rinsing requirements. Store chemicals safely and follow all local regulations.
+            <strong>⚠️ Safety Warning:</strong>
+            <p style="margin: 10px 0 0 0;"><strong>Mixing:</strong> Always add chemicals to water, never water to chemicals.</p>
+            
+            <p style="margin: 10px 0 0 0;"><strong>Personal Protection:</strong> Wear appropriate PPE including gloves, eye protection, and protective clothing. Keep children and pets away from the work area during application and until safe per manufacturer guidelines.</p>
+            
+            <p style="margin: 10px 0 0 0;"><strong>Ventilation:</strong> Ensure adequate ventilation when mixing and applying chemicals, especially in enclosed or indoor spaces. Many chemicals produce harmful fumes that can cause respiratory irritation. Work in well-ventilated areas or use appropriate respiratory protection as specified by the product manufacturer.</p>
+            
+            <p style="margin: 10px 0 0 0;"><strong>Plant Protection:</strong> Pre-wet and protect all surrounding plants, grass, and vegetation - many chemicals can cause damage or death to plant life.</p>
+            
+            <p style="margin: 10px 0 0 0;"><strong>Environmental Protection:</strong> Control and capture any runoff to prevent contamination of drains, waterways, ponds, and aquatic environments - many chemicals are highly toxic to fish and aquatic life.</p>
+            
+            <p style="margin: 10px 0 0 0;"><strong>Manufacturer Guidelines:</strong> Follow all manufacturer guidelines for application, dwell time, and rinsing requirements. Store chemicals safely and follow all local regulations.</p>
         </div>
 
         </div>
@@ -380,10 +402,8 @@
                 `;
                 surfactantGuidance.textContent = 'Average UK surfactants ~20ml/L';
                 surfactantUnit.textContent = 'ml per litre';
-                // Only change default if user hasn't modified it from the previous default
-                if (surfactantInput.value == '1.5' || surfactantInput.value == '8') {
-                    surfactantInput.value = '20';
-                }
+                // Reset to 0 when switching systems
+                surfactantInput.value = '0';
             } 
             // US presets (Gallons/Fluid Ounces)
             else {
@@ -400,10 +420,8 @@
                 `;
                 surfactantGuidance.textContent = 'Average US surfactants ~1-2 oz/gal';
                 surfactantUnit.textContent = 'oz per gallon';
-                // Only change default if user hasn't modified it from the previous default
-                if (surfactantInput.value == '20' || surfactantInput.value == '8') {
-                    surfactantInput.value = '1.5';
-                }
+                // Reset to 0 when switching systems
+                surfactantInput.value = '0';
             }
             
             // Always default to custom
@@ -651,7 +669,7 @@
                     } else {
                         tankSizeInput.value = 5;
                     }
-                    surfactantInput.value = 8;
+                    surfactantInput.value = 0;
                     concentrateInput.value = 12.5;
                     unitLabel.textContent = currentUnit === 'fluidounces' ? 'fl oz' : 'gal';
                 } else {
@@ -661,7 +679,7 @@
                     } else {
                         tankSizeInput.value = 5;
                     }
-                    surfactantInput.value = 20;
+                    surfactantInput.value = 0;
                     concentrateInput.value = 15;
                     unitLabel.textContent = currentUnit === 'millilitres' ? 'ml' : 'L';
                 }
@@ -844,12 +862,18 @@
             // Calculate sodium hypochlorite needed (C1V1 = C2V2)
             const hypoLitres = (desired * tankSize) / concentrate;
             
-            // Calculate water needed
-            const waterLitres = tankSize - hypoLitres;
-
             // Calculate surfactant needed based on total volume
             const surfactantMl = surfactantPerLitre * tankSize;
             const surfactantLitres = surfactantMl / 1000;
+
+            // Calculate water needed (subtract both hypo AND surfactant from total)
+            const waterLitres = tankSize - hypoLitres - surfactantLitres;
+
+            // Validate that we haven't exceeded total volume
+            if (waterLitres < 0) {
+                alert('Error: The combination of chemical and surfactant exceeds the total volume. Please reduce the surfactant amount or adjust other inputs.');
+                return;
+            }
 
             // Store calculated values globally
             calculatedHypoLitres = hypoLitres;
@@ -881,19 +905,19 @@
             // Reset based on current unit
             if (currentUnit === 'gallons') {
                 document.getElementById('tankSize').value = 5;
-                document.getElementById('surfactant').value = 1.5;
+                document.getElementById('surfactant').value = 0;
                 document.getElementById('concentrate').value = 12.5;
             } else if (currentUnit === 'fluidounces') {
                 document.getElementById('tankSize').value = 640; // 5 gallons = 640 fl oz
-                document.getElementById('surfactant').value = 1.5;
+                document.getElementById('surfactant').value = 0;
                 document.getElementById('concentrate').value = 12.5;
             } else if (currentUnit === 'millilitres') {
                 document.getElementById('tankSize').value = 5000;
-                document.getElementById('surfactant').value = 20;
+                document.getElementById('surfactant').value = 0;
                 document.getElementById('concentrate').value = 15;
             } else {
                 document.getElementById('tankSize').value = 5;
-                document.getElementById('surfactant').value = 20;
+                document.getElementById('surfactant').value = 0;
                 document.getElementById('concentrate').value = 15;
             }
             
