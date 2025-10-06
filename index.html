@@ -345,6 +345,12 @@
             } else {
                 desiredInput.disabled = false;
             }
+            
+            // If results are already showing, recalculate automatically
+            const resultsDiv = document.getElementById('results');
+            if (resultsDiv.classList.contains('show')) {
+                calculate();
+            }
         }
 
         // Populate presets based on unit selection (UK vs US terminology)
