@@ -366,6 +366,7 @@
                     <option value="1.5">Render / Cladding (1.5%)</option>
                     <option value="2">Render / Fascia / Soffit (2%)</option>
                     <option value="2.5">Heavy Render / Guttering (2.5%)</option>
+                    <option value="2.5">Mould Treatment (2.5%)</option>
                     <option value="3">Roof Cleaning (3%)</option>
                     <option value="4">Block Paving / Concrete (4%)</option>
                     <option value="5">Heavy Roof / Severe Growth (5%)</option>
@@ -385,6 +386,7 @@
                     <option value="1">Light House Wash (1%)</option>
                     <option value="1.5">House Wash / Siding (1.5%)</option>
                     <option value="2">House Wash / Vinyl Siding (2%)</option>
+                    <option value="2.5">Mold Treatment (2.5%)</option>
                     <option value="3">Light Roof Cleaning (3%)</option>
                     <option value="4">Concrete / Driveways (4%)</option>
                     <option value="5">Heavy Roof Cleaning (5%)</option>
@@ -930,10 +932,18 @@
             calculatedRatioTotal = 0;
         }
 
-        // Allow Enter key to calculate
+        // Allow Enter key to calculate for both calculators
         document.addEventListener('keypress', function(event) {
             if (event.key === 'Enter') {
-                calculate();
+                // Check which tab is active
+                const shTab = document.getElementById('sh-tab');
+                const ratioTab = document.getElementById('ratio-tab');
+                
+                if (shTab.classList.contains('active')) {
+                    calculate();
+                } else if (ratioTab.classList.contains('active')) {
+                    calculateRatio();
+                }
             }
         });
 
