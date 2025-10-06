@@ -792,14 +792,20 @@
                     `${parseFloat(calculatedTankSize.toFixed(3))} L`;
             }
 
-            // Update ratio (stays the same regardless of units)
-            const ratio = calculatedWaterLitres / calculatedHypoLitres;
+            // Calculate ratio including surfactant as part of diluent (water + surfactant : hypo)
+            const totalDiluent = calculatedWaterLitres + calculatedSurfactantLitres;
+            const ratio = totalDiluent / calculatedHypoLitres;
             const roundedRatio = Math.round(ratio * 10) / 10; // Round to 1 decimal place
             const ratioDisplay = roundedRatio % 1 === 0 ? roundedRatio.toFixed(0) : roundedRatio.toFixed(1);
-            document.getElementById('ratio').textContent = `1:${ratioDisplay} (Sodium Hypochlorite:Water)`;
             
-            // Calculate and display dilution ratio (hypo:water)
-            const dilutionRatio = calculatedWaterLitres / calculatedHypoLitres;
+            // Display different label based on whether surfactant is used
+            const ratioLabel = calculatedSurfactantLitres > 0 ? 
+                'Sodium Hypochlorite:Water/Surfactant' : 
+                'Sodium Hypochlorite:Water';
+            document.getElementById('ratio').textContent = `1:${ratioDisplay} (${ratioLabel})`;
+            
+            // Calculate and display dilution ratio (hypo:water+surfactant)
+            const dilutionRatio = totalDiluent / calculatedHypoLitres;
             const roundedDilution = Math.round(dilutionRatio * 10) / 10; // Round to 1 decimal place
             const dilutionDisplay = roundedDilution % 1 === 0 ? roundedDilution.toFixed(0) : roundedDilution.toFixed(1);
             document.getElementById('dilutionRatio').textContent = `1:${dilutionDisplay}`;
