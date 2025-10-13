@@ -17,6 +17,7 @@
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
         }
         .tabs {
             display: flex;
@@ -66,6 +67,7 @@
             color: #2c3e50;
             text-align: center;
             margin-bottom: 30px;
+            padding-right: 140px;
         }
         .input-group {
             margin-bottom: 20px;
@@ -143,10 +145,96 @@
             margin-bottom: 20px;
             font-size: 14px;
         }
+        .examples-btn {
+            position: absolute;
+            top: -2px;
+            right: 8px;
+            padding: 8px 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            white-space: nowrap;
+            width: auto;
+            display: inline-block;
+            z-index: 10;
+        }
+        .examples-btn:hover {
+            background-color: #2980b9;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow: auto;
+        }
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 700px;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .close-modal:hover {
+            color: #000;
+        }
+        .example-card {
+            background-color: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .example-title {
+            color: #2c3e50;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .example-recipe {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #27ae60;
+        }
+        .example-note {
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #856404;
+        }
     </style>
 </head>
 <body>
     <div class="calculator">
+        <button class="examples-btn" onclick="openExamples()">📋 Examples</button>
         <h1>🧪 Soft Wash Calculator</h1>
         
         <div class="tabs">
@@ -357,7 +445,84 @@
         </div>
     </div>
 
+    <!-- Examples Modal -->
+    <div id="examplesModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeExamples()">&times;</span>
+            <h1 style="color: #2c3e50; margin-top: 0;">📋 Mix Examples</h1>
+            
+            <div class="example-card">
+                <div class="example-title">🧴 Glass Cleaner (5% White Vinegar Solution)</div>
+                
+                <div class="example-recipe">
+                    <strong>For 1 Litre:</strong><br>
+                    • White Vinegar (5%): <strong>1 part</strong><br>
+                    • Water: <strong>8 parts</strong><br>
+                    • Surfactant (optional): <strong>1.7 ml</strong>
+                </div>
+                
+                <div class="example-note" style="background-color: #d1ecf1; border-color: #17a2b8; color: #0c5460;">
+                    <strong>ℹ️ Note:</strong> If starting with concentrated acetic acid (e.g., 40%), adjust ratios accordingly. A 5% solution is generally safe and effective for most glass cleaning applications.
+                </div>
+                
+                <div class="example-note">
+                    <strong>💡 Surfactant Tip:</strong> Different surfactants have different concentrations, so the amount needed will vary. Start with less and add more if needed - you don't want it too soapy! This example uses 1.7ml per litre (or 1.25ml per 750ml bottle).
+                </div>
+            </div>
+            
+            <div class="example-card">
+                <div class="example-title">🧽 Ubik 2000 Degreaser Dilution Ratios</div>
+                
+                <div class="example-recipe">
+                    <strong>Light Cleaning:</strong> 1:200 (1 part Ubik to 200 parts water)<br>
+                    <strong>Light Dirt:</strong> 1:100 (1 part Ubik to 100 parts water)<br>
+                    <strong>Medium Dirt:</strong> 1:50 (1 part Ubik to 50 parts water)<br>
+                    <strong>Heavy Dirt:</strong> 1:10 (1 part Ubik to 10 parts water)<br>
+                    <strong>Hardened Grime:</strong> Undiluted (use directly without water)
+                </div>
+                
+                <div class="example-note" style="background-color: #d1ecf1; border-color: #17a2b8; color: #0c5460;">
+                    <strong>ℹ️ Note:</strong> Always follow manufacturer's instructions. Test on a small area first before applying to entire surface.
+                </div>
+            </div>
+            
+            <div class="example-card">
+                <div class="example-title">🌿 BAC 50 Biocide (Moss Killer) Dilution Ratios</div>
+                
+                <div class="example-recipe">
+                    <strong>Maintenance / Preventative:</strong> 1:20 - 1:30 (1 part BAC 50 to 20-30 parts water)<br>
+                    <strong>Heavy Organic Growth:</strong> 1:8 - 1:10 (1 part BAC 50 to 8-10 parts water)
+                </div>
+                
+                <div class="example-note" style="background-color: #d1ecf1; border-color: #17a2b8; color: #0c5460;">
+                    <strong>ℹ️ Note:</strong> Maintenance ratios are for areas already cleaned as a preventative measure. Stronger ratios are for heavy organic growth without scraping. Always follow manufacturer's instructions.
+                </div>
+            </div>
+            
+            <div style="text-align: center; padding: 15px; background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 5px; margin-top: 20px;">
+                <strong>⚠️ Disclaimer:</strong> These examples are for informational purposes only. Always test on a small area first and follow proper safety precautions when mixing and using cleaning solutions.
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Examples Modal Functions
+        function openExamples() {
+            document.getElementById('examplesModal').style.display = 'block';
+        }
+
+        function closeExamples() {
+            document.getElementById('examplesModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('examplesModal');
+            if (event.target == modal) {
+                closeExamples();
+            }
+        }
+
         // Apply preset values to desired strength input
         function applyPreset() {
             const presetValue = document.getElementById('presets').value;
