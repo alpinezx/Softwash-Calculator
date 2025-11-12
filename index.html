@@ -10,7 +10,7 @@
             max-width: 800px;
             margin: 50px auto;
             padding: 20px;
-            background-color: #f5f5f5;
+            background-color: #e8f4f8;
         }
         .calculator {
             background-color: white;
@@ -167,7 +167,7 @@
             transition: background-color 0.3s;
             white-space: nowrap;
             width: auto;
-            display: inline-block;
+            display: none;
             z-index: 10;
         }
         .examples-btn:hover {
@@ -291,7 +291,7 @@
         <div class="input-group">
             <label for="surfactant">Surfactant (<span id="surfactantUnit">ml per litre</span> of total mix)</label>
             <input type="number" id="surfactant" value="0" min="0" step="0.1">
-            <small id="surfactantGuidance" style="color: #666;">Average UK surfactants ~20ml/L</small>
+            <small id="surfactantGuidance" style="color: #666;">Average UK surfactants ~30ml/L</small>
         </div>
 
         <button onclick="calculate()">Calculate Mix</button>
@@ -601,7 +601,7 @@
                     <option value="5">Heavy Roof / Severe Growth (5%)</option>
                     <option value="6">Extreme Organic Growth (6%)</option>
                 `;
-                surfactantGuidance.textContent = 'Average UK surfactants ~20ml/L';
+                surfactantGuidance.textContent = 'Average UK surfactants ~30ml/L';
                 surfactantUnit.textContent = 'ml per litre';
                 // Reset to 0 when switching systems
                 surfactantInput.value = '0';
@@ -619,7 +619,7 @@
                     <option value="5">Heavy Roof Cleaning (5%)</option>
                     <option value="6">Severe Organic Growth (6%)</option>
                 `;
-                surfactantGuidance.textContent = 'Average US surfactants ~1-2 oz/gal';
+                surfactantGuidance.textContent = 'Average US surfactants ~1 oz/gal';
                 surfactantUnit.textContent = 'oz per gallon';
                 // Reset to 0 when switching systems
                 surfactantInput.value = '0';
@@ -642,13 +642,20 @@
                 tab.classList.remove('active');
             });
             
+            // Get the Code Examples button
+            const examplesBtn = document.querySelector('.examples-btn');
+            
             // Show selected tab content
             if (tabName === 'sh') {
                 document.getElementById('sh-tab').classList.add('active');
                 document.querySelectorAll('.tab')[0].classList.add('active');
+                // Hide Code Examples button on Soft Wash Calculator
+                examplesBtn.style.display = 'none';
             } else if (tabName === 'ratio') {
                 document.getElementById('ratio-tab').classList.add('active');
                 document.querySelectorAll('.tab')[1].classList.add('active');
+                // Show Code Examples button on Chemical Ratio Calculator
+                examplesBtn.style.display = 'inline-block';
             }
         }
 
