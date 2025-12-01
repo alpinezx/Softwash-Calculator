@@ -870,6 +870,7 @@
                 calculatedSurfactantLitres = 0;
                 calculatedTankSize = 0;
                 calculatedConcentrate = 0;
+                calculatedDesired = 0;
                 
                 if (currentIsUS) {
                     // Switching to US system
@@ -880,6 +881,7 @@
                     }
                     surfactantInput.value = 0;
                     concentrateInput.value = 12.5;
+                    document.getElementById('desired').value = 3;
                     unitLabel.textContent = currentUnit === 'fluidounces' ? 'fl oz' : 'gal';
                 } else {
                     // Switching to UK system
@@ -890,6 +892,7 @@
                     }
                     surfactantInput.value = 0;
                     concentrateInput.value = 15;
+                    document.getElementById('desired').value = 3;
                     unitLabel.textContent = currentUnit === 'millilitres' ? 'ml' : 'L';
                 }
                 
