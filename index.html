@@ -836,6 +836,7 @@
         let calculatedSurfactantLitres = 0;
         let calculatedTankSize = 0;
         let calculatedConcentrate = 0;
+        let calculatedDesired = 0;
         let previousUnit = document.getElementById('unitToggle') ? document.getElementById('unitToggle').value : 'litres';
 
         function convertTankSizeUnit() {
@@ -1016,9 +1017,12 @@
             const dilutionDisplay = roundedDilution % 1 === 0 ? roundedDilution.toFixed(0) : roundedDilution.toFixed(1);
             document.getElementById('dilutionRatio').textContent = `1:${dilutionDisplay}`;
             
-            // Display the final strength info
-            const desiredStrength = (calculatedHypoLitres * calculatedConcentrate) / calculatedTankSize;
-            document.getElementById('finalStrength').textContent = desiredStrength.toFixed(1);
+            // Display the final strength info (use stored value instead of recalculating)
+            // Use same formatting logic as the mix percentage heading
+            const finalStrengthDisplay = calculatedDesired % 1 === 0 ? calculatedDesired.toFixed(0) : 
+                                        (calculatedDesired * 10) % 1 === 0 ? calculatedDesired.toFixed(1) : 
+                                        calculatedDesired.toFixed(2);
+            document.getElementById('finalStrength').textContent = finalStrengthDisplay;
             document.getElementById('concentrateStrength').textContent = calculatedConcentrate.toFixed(1);
         }
 
@@ -1095,6 +1099,7 @@
             calculatedSurfactantLitres = surfactantLitres;
             calculatedTankSize = tankSize;
             calculatedConcentrate = concentrate;
+            calculatedDesired = desired;
 
             // Display concentrate strength
             document.getElementById('concentrateDisplay').textContent = concentrate.toFixed(1);
@@ -1149,6 +1154,7 @@
             calculatedSurfactantLitres = 0;
             calculatedTankSize = 0;
             calculatedConcentrate = 0;
+            calculatedDesired = 0;
         }
 
         // Reset Chemical Ratio calculator to defaults
